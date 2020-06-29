@@ -20,8 +20,7 @@ import com.shashank.sony.fancytoastlib.FancyToast;
 public class SignUp extends AppCompatActivity implements View.OnClickListener {
     private EditText edtEmail, edtUserName, edtPassword;
     private Button btnSignUp;
-    private TextView txtLogin, txtPW;
-    private ProgressBar progressBar;
+    private TextView txtLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +33,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         edtPassword = findViewById(R.id.edtPassword);
         btnSignUp = findViewById(R.id.btnSignUp);
         txtLogin = findViewById(R.id.txtLogin);
-        txtPW = findViewById(R.id.txtPW);
-        progressBar = findViewById(R.id.progressBar);
 
         btnSignUp.setOnClickListener(this);
         txtLogin.setOnClickListener(this);
@@ -54,17 +51,15 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
             case R.id.btnSignUp:
 
-                btnSignUp.setAlpha(0.4f);
-                txtPW.setAlpha(1);
-                progressBar.setAlpha(1);
-
                 final ParseUser user = new ParseUser();
                 user.setUsername(edtUserName.getText().toString());
                 user.setPassword(edtPassword.getText().toString());
                 user.setEmail(edtEmail.getText().toString());
 
 
-
+                final ProgressDialog progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("Signing up " + edtUserName.getText().toString());
+                progressDialog.show();
                 user.signUpInBackground(new SignUpCallback() {
                     public void done(ParseException e) {
                         if (e == null) {
@@ -80,11 +75,10 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                             // Sign up didn't succeed. Look at the ParseException
                             // to figure out what went wrong
                         }
+                        progressDialog.dismiss();
                     }
                 });
-                btnSignUp.setAlpha(1);
-                txtPW.setAlpha(0);
-                progressBar.setAlpha(0);
+
                 break;
 
 
