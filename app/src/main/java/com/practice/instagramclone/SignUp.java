@@ -3,7 +3,8 @@ package com.practice.instagramclone;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
-import android.widget.ProgressBar;
+import android.view.KeyEvent;
+import android.view.inputmethod.InputMethodManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -28,6 +29,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.activity_sign_up);
         setTitle("SignUp");
 
+
+
         edtEmail = findViewById(R.id.edtEmail);
         edtUserName = findViewById(R.id.edtName);
         edtPassword = findViewById(R.id.edtPassword);
@@ -36,6 +39,18 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         btnSignUp.setOnClickListener(this);
         txtLogin.setOnClickListener(this);
+
+        edtPassword.setOnKeyListener(new View.OnKeyListener() {     //To use enter key as sign up...
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER & event.getAction() == KeyEvent.ACTION_DOWN){
+
+                    onClick(btnSignUp);
+
+                }
+                return false;
+            }
+        });
 
 
         if (ParseUser.getCurrentUser() != null){
@@ -51,33 +66,41 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
             case R.id.btnSignUp:
 
-                final ParseUser user = new ParseUser();
-                user.setUsername(edtUserName.getText().toString());
-                user.setPassword(edtPassword.getText().toString());
-                user.setEmail(edtEmail.getText().toString());
+                if(edtUserName.getText().toString() == "" ||
+                   edtPassword.getText().toString() == "" ||
+                   edtEmail.getText().toString() == "")
+                {FancyToast.makeText(SignUp.this, "Error in signing up : Email or username or password can't be empty",
+                        Toast.LENGTH_LONG, FancyToast.ERROR, true).show();}
+                else {
+                    final ParseUser user = new ParseUser();
+                    user.setUsername(edtUserName.getText().toString());
+                    user.setPassword(edtPassword.getText().toString());
+                    user.setEmail(edtEmail.getText().toString());
 
 
-                final ProgressDialog progressDialog = new ProgressDialog(this);
-                progressDialog.setMessage("Signing up " + edtUserName.getText().toString());
-                progressDialog.show();
-                user.signUpInBackground(new SignUpCallback() {
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            FancyToast.makeText(SignUp.this, user.getUsername().toString() + " is signed up",
-                                    FancyToast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
-                            Intent intent1 = new Intent(SignUp.this, LoginActivity.class);
-                            startActivity(intent1);
-                            // Hooray! Let them use the app now.
-                        } else {
-                            FancyToast.makeText(SignUp.this, "Error in signing up : " + e.getMessage(),
-                                    Toast.LENGTH_LONG, FancyToast.ERROR, true).show();
+                    final ProgressDialog progressDialog = new ProgressDialog(this);
+                    progressDialog.setMessage("Signing up " + edtUserName.getText().toString());
+                    progressDialog.show();
+                    user.signUpInBackground(new SignUpCallback() {
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                FancyToast.makeText(SignUp.this, user.getUsername().toString() + " is signed up",
+                                        FancyToast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
+                                Intent intent1 = new Intent(SignUp.this, LoginActivity.class);
+                                startActivity(intent1);
+                                // Hooray! Let them use the app now.
+                            } else {
+                                FancyToast.makeText(SignUp.this, "Error in signing up : " + e.getMessage(),
+                                        Toast.LENGTH_LONG, FancyToast.ERROR, true).show();
 
-                            // Sign up didn't succeed. Look at the ParseException
-                            // to figure out what went wrong
+                                // Sign up didn't succeed. Look at the ParseException
+                                // to figure out what went wrong
+                            }
+                            progressDialog.dismiss();
                         }
-                        progressDialog.dismiss();
-                    }
-                });
+                    });
+                }
+
 
                 break;
 
@@ -93,6 +116,15 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         }
 
 
+    }
+    //To move down the keyboard on tapping the empty area...
+    public void layoutIsTapped(View view){
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,6 +30,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         setTitle("Login");
 
+
+
         edtLoginUserName = findViewById(R.id.edtLoginName);
         edtLoginPassword = findViewById(R.id.edtLoginPassword);
         btnLogin = findViewById(R.id.btnLogin);
@@ -35,6 +39,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         btnLogin.setOnClickListener(this);
         txtSignUp.setOnClickListener(this);
+
+        edtLoginPassword.setOnKeyListener(new View.OnKeyListener() {        //To use enter key as login...
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER & event.getAction() == KeyEvent.ACTION_DOWN){
+
+                    onClick(btnLogin);
+
+                }
+                return false;
+            }
+        });
 
         if (ParseUser.getCurrentUser() != null){
             ParseUser.getCurrentUser().logOut();
@@ -72,6 +88,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(intent);
                 break;
 
+        }
+
+    }
+    //To move down the keyboard on tapping the empty area...
+    public void loginLayoutIsTapped(View view) {
+
+        try {
+
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
