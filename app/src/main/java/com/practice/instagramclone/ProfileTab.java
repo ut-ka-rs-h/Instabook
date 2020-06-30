@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,9 +22,9 @@ import com.shashank.sony.fancytoastlib.FancyToast;
 
 public class ProfileTab extends Fragment {
 
-        // TODO: Rename and change types of parameters
     private EditText edtNamePT, edtUsernamePT, edtBioPT, edtEmailPT, edtGenderPT, edtPhoneNumberPT, edtDOBPT;
     private FloatingActionButton fabUpdatePT;
+    private ImageView imgProfilePicPT;
     private TextView txtCPP;
 
     public ProfileTab() {
@@ -42,6 +43,9 @@ public class ProfileTab extends Fragment {
         edtGenderPT = view.findViewById(R.id.edtGenderPT);
         edtPhoneNumberPT = view.findViewById(R.id.edtPhoneNumberPT);
         edtDOBPT = view.findViewById(R.id.edtDOBPT);
+
+        imgProfilePicPT = view.findViewById(R.id.imgProfilePicPT);
+        txtCPP = view.findViewById(R.id.txtCPP);
 
         fabUpdatePT = view.findViewById(R.id.fabUpdatePT);
 
@@ -68,6 +72,9 @@ public class ProfileTab extends Fragment {
         if (parseUser.get("phoneNumber") == null) {edtPhoneNumberPT.setText("");}
         else {edtPhoneNumberPT.setText(parseUser.get("phoneNumber") + "");}
 
+        if (parseUser.get("profilePic") == null) {imgProfilePicPT.setImageResource(R.drawable.login);}
+        //else {imgProfilePicPT.setImageBitmap(parseUser.get("profilePic"));}
+
         fabUpdatePT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +86,7 @@ public class ProfileTab extends Fragment {
                 parseUser.put("dateOfBirth", edtDOBPT.getText().toString());
                 parseUser.put("gender", edtGenderPT.getText().toString());
                 parseUser.put("phoneNumber", edtPhoneNumberPT.getText().toString());
+
 
                 final ProgressDialog progressDialog = new ProgressDialog(getContext());
                 progressDialog.setMessage("Please wait...");

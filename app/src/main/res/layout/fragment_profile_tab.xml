@@ -56,7 +56,7 @@
         android:layout_marginEnd="25dp"
         android:ems="10"
         android:hint="E-mail Address"
-        android:inputType="textPersonName"
+        android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtBioPT" />
@@ -82,7 +82,7 @@
         android:layout_marginEnd="25dp"
         android:ems="10"
         android:hint="Phone number"
-        android:inputType="textPersonName"
+        android:inputType="phone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtGenderPT" />
@@ -95,7 +95,7 @@
         android:layout_marginEnd="25dp"
         android:ems="10"
         android:hint="Date of birth"
-        android:inputType="textPersonName"
+        android:inputType="date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
@@ -125,11 +125,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/imgProfilePicPT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/login"
         app:layout_constraintBottom_toTopOf="@+id/txtCPP"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
