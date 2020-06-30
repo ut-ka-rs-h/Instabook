@@ -126,8 +126,8 @@
 
     <ImageView
         android:id="@+id/imgProfilePicPT"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:src="@drawable/login"
         app:layout_constraintBottom_toTopOf="@+id/txtCPP"
         app:layout_constraintEnd_toEndOf="parent"

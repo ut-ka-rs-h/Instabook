@@ -1,10 +1,23 @@
 package com.practice.instagramclone;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +29,24 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
-public class ProfileTab extends Fragment {
+import java.io.ByteArrayOutputStream;
+
+public class ProfileTab extends Fragment implements View.OnClickListener{
 
     private EditText edtNamePT, edtUsernamePT, edtBioPT, edtEmailPT, edtGenderPT, edtPhoneNumberPT, edtDOBPT;
     private FloatingActionButton fabUpdatePT;
     private ImageView imgProfilePicPT;
     private TextView txtCPP;
+
+    private Bitmap receivedImageBitmap;
+
+    final ParseUser parseUser = ParseUser.getCurrentUser();
 
     public ProfileTab() {
         // Required empty public constructor
@@ -49,8 +70,6 @@ public class ProfileTab extends Fragment {
 
         fabUpdatePT = view.findViewById(R.id.fabUpdatePT);
 
-        final ParseUser parseUser = ParseUser.getCurrentUser();
-
         if (parseUser.get("name") == null) {edtNamePT.setText("");}
         else {edtNamePT.setText(parseUser.get("name") + "");}
 
@@ -72,12 +91,20 @@ public class ProfileTab extends Fragment {
         if (parseUser.get("phoneNumber") == null) {edtPhoneNumberPT.setText("");}
         else {edtPhoneNumberPT.setText(parseUser.get("phoneNumber") + "");}
 
-        if (parseUser.get("profilePic") == null) {imgProfilePicPT.setImageResource(R.drawable.login);}
-        //else {imgProfilePicPT.setImageBitmap(parseUser.get("profilePic"));}
+        if (parseUser.get("profilePicture") == null) {imgProfilePicPT.setImageResource(R.drawable.login);}
+        else {imgProfilePicPT.setImageBitmap((Bitmap) parseUser.get("profilePicture"));}
 
-        fabUpdatePT.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        fabUpdatePT.setOnClickListener(ProfileTab.this);
+        txtCPP.setOnClickListener(ProfileTab.this);
+
+        return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+
+            case R.id.fabUpdatePT:
 
                 parseUser.put("name", edtNamePT.getText().toString());
                 parseUser.put("username", edtUsernamePT.getText().toString());
@@ -106,9 +133,97 @@ public class ProfileTab extends Fragment {
                     }
                 });
 
-            }
-        });
+                break;
 
-        return view;
+            case R.id.txtCPP:
+                if (Build.VERSION.SDK_INT >= 23 && ActivityCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                    requestPermissions(new String[]
+                            {Manifest.permission.READ_EXTERNAL_STORAGE},4000);
+
+                }
+                else {
+                    getChosenImage();
+                }
+                break;
+
+        }
+    }
+
+    private void getChosenImage() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, 5000);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 4000){
+
+            if (grantResults.length > 0 && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED){
+                getChosenImage();
+            }
+
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 5000) {
+
+            if (resultCode == Activity.RESULT_OK){
+
+                try {
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn,
+                            null, null, null);
+                    cursor.moveToFirst();
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String picturePath = cursor.getString(columnIndex);
+                    cursor.close();
+                    receivedImageBitmap = BitmapFactory.decodeFile(picturePath);
+
+                    final ProgressDialog dialog = new ProgressDialog(getContext());
+                    dialog.setMessage("Uploading to server...");
+                    dialog.show();
+
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(); //to convert image to an array of bytes..
+                    receivedImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    imgProfilePicPT.setImageBitmap(receivedImageBitmap);
+                    byte[] bytes = byteArrayOutputStream.toByteArray();
+                    ParseFile parseFile = new ParseFile("img.png", bytes);
+                    ParseObject parseObject = new ParseObject("Profile");
+                    parseObject.put("profilePicture", parseFile);
+                    parseObject.put("username", ParseUser.getCurrentUser().getUsername());
+
+                    parseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null){
+                                FancyToast.makeText(getContext(), "Done!",
+                                        Toast.LENGTH_SHORT, FancyToast.SUCCESS,true).show();
+                            }
+                            else {FancyToast.makeText(getContext(), "Unknown Error : " + e.getMessage(),
+                                    Toast.LENGTH_SHORT, FancyToast.INFO,true).show();}
+                            dialog.dismiss();
+                        }
+
+                    });
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+
     }
 }
