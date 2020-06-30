@@ -16,11 +16,15 @@ public class TabAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0:
-                return new ProfileTab();
+                return new HomeTab();
             case 1:
                 return new UsersTab();
             case 2:
                 return new SharePictureTab();
+            case 3:
+                return new FollowingTab();
+            case 4:
+                return new ProfileTab();
             default:
                 return null;
         }
@@ -28,7 +32,7 @@ public class TabAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 5;
     }
 
     @Nullable
@@ -37,11 +41,15 @@ public class TabAdapter extends FragmentPagerAdapter {
         switch (position){
 
             case 0:
-                return "Profile";
+                return "Home";
             case 1:
                 return "Users";
             case 2:
-                return "Share Picture";
+                return "Share";
+            case 3:
+                return "Following";
+            case 4:
+                return "Profile";
             default:
                 return null;
         }
