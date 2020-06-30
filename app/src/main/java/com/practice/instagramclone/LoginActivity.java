@@ -65,11 +65,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             case R.id.btnLogin:
 
+                final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
+                progressDialog.setMessage("Logging in " + edtLoginUserName.getText().toString());
+                progressDialog.show();
+
                 ParseUser.logInInBackground(edtLoginUserName.getText().toString(), edtLoginPassword.getText().toString(), new LogInCallback() {
                     public void done(ParseUser user, ParseException e) {
-                        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
-                        progressDialog.setMessage("Logging in " + edtLoginUserName.getText().toString());
-                        progressDialog.show();
+
                         if (user != null && e == null) {
                             FancyToast.makeText(LoginActivity.this, user.getUsername() + " is logged in",
                                     Toast.LENGTH_LONG, FancyToast.SUCCESS, true).show();

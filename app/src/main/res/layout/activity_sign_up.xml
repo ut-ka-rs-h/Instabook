@@ -10,7 +10,7 @@
     tools:context=".SignUp">
 
     <EditText
-        android:id="@+id/edtEmail"
+        android:id="@+id/edtEmailPT"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -18,7 +18,7 @@
         android:ems="10"
         android:hint="Email address"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/edtName"
+        app:layout_constraintBottom_toTopOf="@+id/edtNamePT"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
@@ -53,7 +53,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/edtName"
+        android:id="@+id/edtNamePT"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -97,7 +97,7 @@
         android:text="Instabook"
         android:textColor="#000000"
         android:textSize="70sp"
-        app:layout_constraintBottom_toTopOf="@+id/edtEmail"
+        app:layout_constraintBottom_toTopOf="@+id/edtEmailPT"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
