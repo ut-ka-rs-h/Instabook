@@ -7,7 +7,22 @@
     tools:context=".SocialMediaActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/myToolbar"
+        android:id="@+id/myToolBarA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/myToolbarB"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -31,11 +46,13 @@
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/myToolbar"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/myToolbarB"
+        android:layout_below="@+id/myToolBarA"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
         android:layout_marginEnd="0dp" />
 
 </RelativeLayout>

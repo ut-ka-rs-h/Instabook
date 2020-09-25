@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,14 +29,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.parse.FindCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 public class ProfileTab extends Fragment implements View.OnClickListener{
 
@@ -45,6 +50,7 @@ public class ProfileTab extends Fragment implements View.OnClickListener{
     private TextView txtCPP;
 
     private Bitmap receivedImageBitmap;
+    public Bitmap userProfilePic;
 
     final ParseUser parseUser = ParseUser.getCurrentUser();
 
@@ -91,12 +97,38 @@ public class ProfileTab extends Fragment implements View.OnClickListener{
         if (parseUser.get("phoneNumber") == null) {edtPhoneNumberPT.setText("");}
         else {edtPhoneNumberPT.setText(parseUser.get("phoneNumber") + "");}
 
-        if (parseUser.get("profilePicture") == null) {imgProfilePicPT.setImageResource(R.drawable.login);}
-        else {imgProfilePicPT.setImageBitmap((Bitmap) parseUser.get("profilePicture"));}
+
 
         fabUpdatePT.setOnClickListener(ProfileTab.this);
         txtCPP.setOnClickListener(ProfileTab.this);
 
+
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Profile");
+        parseQuery.whereEqualTo("username", parseUser.get("username") + "");
+        parseQuery.orderByDescending("createdAt");
+
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (objects.size() > 0 && e == null){
+                        ParseObject profilePics = objects.get(0);
+                        ParseFile myProfilePicture = (ParseFile) profilePics.get("profilePicture");
+                        myProfilePicture.getDataInBackground(new GetDataCallback() {
+                            @Override
+                            public void done(byte[] data, ParseException e) {
+                                if (e == null){
+                                    userProfilePic = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                    imgProfilePicPT.setImageBitmap(userProfilePic);
+                                }
+                                else {imgProfilePicPT.setImageResource(R.drawable.login);}
+                            }
+                        });
+                }
+                else {
+                    imgProfilePicPT.setImageResource(R.drawable.login);
+                }
+            }
+        });
         return view;
     }
 
@@ -188,14 +220,10 @@ public class ProfileTab extends Fragment implements View.OnClickListener{
                     String picturePath = cursor.getString(columnIndex);
                     cursor.close();
                     receivedImageBitmap = BitmapFactory.decodeFile(picturePath);
-
-                    final ProgressDialog dialog = new ProgressDialog(getContext());
-                    dialog.setMessage("Uploading to server...");
-                    dialog.show();
+                    imgProfilePicPT.setImageBitmap(receivedImageBitmap);
 
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(); //to convert image to an array of bytes..
                     receivedImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    imgProfilePicPT.setImageBitmap(receivedImageBitmap);
                     byte[] bytes = byteArrayOutputStream.toByteArray();
                     ParseFile parseFile = new ParseFile("img.png", bytes);
                     ParseObject parseObject = new ParseObject("Profile");
@@ -206,12 +234,11 @@ public class ProfileTab extends Fragment implements View.OnClickListener{
                         @Override
                         public void done(ParseException e) {
                             if (e == null){
-                                FancyToast.makeText(getContext(), "Done!",
+                                FancyToast.makeText(getContext(), "Profile picture uploaded successfully!",
                                         Toast.LENGTH_SHORT, FancyToast.SUCCESS,true).show();
                             }
                             else {FancyToast.makeText(getContext(), "Unknown Error : " + e.getMessage(),
                                     Toast.LENGTH_SHORT, FancyToast.INFO,true).show();}
-                            dialog.dismiss();
                         }
 
                     });
@@ -226,4 +253,5 @@ public class ProfileTab extends Fragment implements View.OnClickListener{
         }
 
     }
+
 }

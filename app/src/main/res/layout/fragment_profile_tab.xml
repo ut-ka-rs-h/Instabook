@@ -43,7 +43,7 @@
         android:layout_marginEnd="25dp"
         android:ems="10"
         android:hint="Bio"
-        android:inputType="textPersonName"
+        android:inputType="textMultiLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtUsernamePT" />
@@ -124,7 +124,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imgProfilePicPT"
         android:layout_width="150dp"
         android:layout_height="150dp"

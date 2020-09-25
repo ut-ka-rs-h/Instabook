@@ -24,7 +24,7 @@
         android:layout_margin="20dp"
         android:ems="10"
         android:hint="Write a description..."
-        android:inputType="textPersonName"
+        android:inputType="textMultiLine"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
